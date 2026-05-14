@@ -9602,7 +9602,14 @@ async function _sincronizarTudoDoSheets(){
     const vendasMB = await lerCSVDireto(CSV_CONFIG.vendas_mb);
     if(vendasMB && vendasMB.length > 0){
       setLoad(35, `✅ MB: ${vendasMB.length.toLocaleString('pt-BR')} registros — processando…`);
+      // Debug: log first row to check date format
+      if(vendasMB[0]) console.log('🔍 CSV sample row:', JSON.stringify(vendasMB[0]).slice(0,300));
       DB.mb = vendasMB.map(r => _parseDMSRow(r, 'mb')).filter(Boolean);
+      // Debug: check parsed dates
+      const anos = [...new Set(DB.mb.map(r=>r.Ano))].sort();
+      const meses2026 = DB.mb.filter(r=>r.Ano===2026).map(r=>r.Mês_Num);
+      const meses2026Set = [...new Set(meses2026)].sort((a,b)=>a-b);
+      console.log('🔍 Anos no DB:', anos, '| Meses 2026:', meses2026Set);
       syncOsTypes(DB.mb);
       syncOSFromFile(DB.mb);
       syncSegmentos(DB.mb);
