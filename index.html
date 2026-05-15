@@ -7070,8 +7070,8 @@ function _parseDMSRow(r, env) {
   if(emissaoRaw){
     // Suporta DD/MM/YYYY, YYYY-MM-DD, JS Date string e objetos Date
     const s = String(emissaoRaw);
-    const m1 = s.match(/^(\d{2})\/(\d{2})\/(\d{4})/);   // DD/MM/YYYY
-    const m2 = s.match(/^(\d{4})-(\d{2})-(\d{2})/);        // YYYY-MM-DD
+    const m1 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);   // D/M/YYYY ou DD/MM/YYYY
+    const m2 = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);        // YYYY-MM-DD
     // JS Date: "Mon Jan 04 2024..." ou "Thu Apr 25 2024..."
     const MONTHS = {Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12};
     const m3 = s.match(/(\w{3})\s+(\d{1,2})\s+(\d{4})/);
