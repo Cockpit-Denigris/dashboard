@@ -4500,7 +4500,17 @@ function renderPxR(env,rows){
   });
   const hasMeta = meta.some(v=>v>0) && todosAnosTêmMeta(env,rows);
   // Realizado: Fat_Real já filtrado por canal via _baseFilter (depto ativo)
-  const real=ms.map(m=>sm(rows.filter(r=>r.Mês_Num===m),'Fat_Real'));
+  // Não mostrar realizado em meses futuros (após mês atual)
+  const _hoje = new Date();
+  const _anoAtualPxR = _hoje.getFullYear();
+  const _mesAtualPxR = _hoje.getMonth()+1;
+  const anosFiltro = [...new Set(rows.map(r=>r.Ano))];
+  const anoUnico = anosFiltro.length===1 ? anosFiltro[0] : null;
+  const real=ms.map(m=>{
+    // Se filtro é ano atual, não mostra realizado em meses futuros
+    if(anoUnico === _anoAtualPxR && m > _mesAtualPxR) return 0;
+    return sm(rows.filter(r=>r.Mês_Num===m),'Fat_Real');
+  });
   const lblColor=chartLbl(.85);
   const datasets=[];
   if(hasMeta) datasets.push({
@@ -9602,14 +9612,12 @@ async function _sincronizarTudoDoSheets(){
     const vendasMB = await lerCSVDireto(CSV_CONFIG.vendas_mb);
     if(vendasMB && vendasMB.length > 0){
       setLoad(35, `✅ MB: ${vendasMB.length.toLocaleString('pt-BR')} registros — processando…`);
-      // Debug: log first row to check date format
-      if(vendasMB[0]) console.log('🔍 CSV sample row:', JSON.stringify(vendasMB[0]).slice(0,300));
       DB.mb = vendasMB.map(r => _parseDMSRow(r, 'mb')).filter(Boolean);
-      // Debug: check parsed dates
-      const anos = [...new Set(DB.mb.map(r=>r.Ano))].sort();
-      const meses2026 = DB.mb.filter(r=>r.Ano===2026).map(r=>r.Mês_Num);
-      const meses2026Set = [...new Set(meses2026)].sort((a,b)=>a-b);
-      console.log('🔍 Anos no DB:', anos, '| Meses 2026:', meses2026Set);
+      // Debug: check Mar/Apr 2026
+      const _mar26 = DB.mb.filter(r=>r.Ano===2026&&r.Mês_Num===3);
+      const _abr26 = DB.mb.filter(r=>r.Ano===2026&&r.Mês_Num===4);
+      console.log(`🔍 Mar/2026: ${_mar26.length} regs, Fat_Real total: ${_mar26.reduce((s,r)=>s+r.Fat_Real,0).toFixed(2)}`);
+      console.log(`🔍 Abr/2026: ${_abr26.length} regs, Fat_Real total: ${_abr26.reduce((s,r)=>s+r.Fat_Real,0).toFixed(2)}`);
       syncOsTypes(DB.mb);
       syncOSFromFile(DB.mb);
       syncSegmentos(DB.mb);
