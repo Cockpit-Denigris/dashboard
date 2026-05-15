@@ -9703,11 +9703,14 @@ async function _sincronizarTudoDoSheets(){
               Fat_Real:0, RB_Real:0, LB_Real_R:0, RD_Real_R:0, Bon_Real:0,
               Fat_Plan:0, RB_Plan:0, LB_Plan_Pct:0, RD_Plan_Pct:0,
               Canal:'GERAL', Departamento:'GERAL', Segmento:'GERAL',
-              Vendedor:'—', Nr_OS:'', Tipo_OS:'', Qtde:0, Custo:0 };
+              Vendedor:'—', Nr_OS:'', Tipo_OS:'', Qtde:0, Custo:0,
+              _hasValue: false };
             dreMap[key][campo] = val;
+            if(val !== 0) dreMap[key]._hasValue = true;
           }
         });
-        const dreData = Object.values(dreMap);
+        // Só incluir meses DRE que têm pelo menos um valor real — evita bloquear DMS em meses futuros
+        const dreData = Object.values(dreMap).filter(r => r._hasValue);
         // Aplicar ao DB MB — substituir DRE antigo
         DB.mb = (DB.mb||[]).filter(r => r._fonte !== 'dre');
         DB.mb.push(...dreData);
