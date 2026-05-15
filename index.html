@@ -9719,6 +9719,10 @@ async function _sincronizarTudoDoSheets(){
         });
         // Só incluir meses DRE que têm pelo menos um valor real — evita bloquear DMS em meses futuros
         const dreData = Object.values(dreMap).filter(r => r._hasValue);
+        // Debug: check DRE months for 2026
+        const dre2026 = dreData.filter(r=>r.Ano===2026);
+        const dreM2026 = [...new Set(dre2026.map(r=>r.Mês_Num))].sort((a,b)=>a-b);
+        console.log(`🔍 DRE 2026 meses no DB: ${dreM2026.join(',')}`);
         // Aplicar ao DB MB — substituir DRE antigo
         DB.mb = (DB.mb||[]).filter(r => r._fonte !== 'dre');
         DB.mb.push(...dreData);
