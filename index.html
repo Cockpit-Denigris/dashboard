@@ -7089,7 +7089,7 @@ function _parseDMSRow(r, env) {
   const filial = mapFilial(String(filialRaw).trim()) || String(filialRaw).trim();
   if(!filial) return null;
 
-  const vlrLiq   = parseFloat(String(r['Vlr_Liquido']  || r['Vlr Líquido'] || r['Vlr Liquido'] || 0).replace(',','.')) || 0;
+  const vlrLiq   = parseFloat(String(r['Vlr Líquido'] || r['Vlr Líquido Venda'] || r['Vlr_Liquido'] || r['Vlr Liquido'] || 0).replace(',','.')) || 0;
   const custo    = parseFloat(String(r['Custo']         || 0).replace(',','.')) || 0;
   const lucroR   = parseFloat(String(r['Lucro']         || 0).replace(',','.')) || 0;
   const lucroPct = parseFloat(String(r['Pct_Lucro']     || r['% Lucro'] || 0).replace(',','.')) || 0;
@@ -9612,12 +9612,12 @@ async function _sincronizarTudoDoSheets(){
     const vendasMB = await lerCSVDireto(CSV_CONFIG.vendas_mb);
     if(vendasMB && vendasMB.length > 0){
       setLoad(35, `✅ MB: ${vendasMB.length.toLocaleString('pt-BR')} registros — processando…`);
+      // Debug: log column names from CSV
+      if(vendasMB[0]) console.log('🔍 Colunas CSV:', Object.keys(vendasMB[0]).join(' | '));
       DB.mb = vendasMB.map(r => _parseDMSRow(r, 'mb')).filter(Boolean);
-      // Debug: check Mar/Apr 2026
       const _mar26 = DB.mb.filter(r=>r.Ano===2026&&r.Mês_Num===3);
-      const _abr26 = DB.mb.filter(r=>r.Ano===2026&&r.Mês_Num===4);
       console.log(`🔍 Mar/2026: ${_mar26.length} regs, Fat_Real total: ${_mar26.reduce((s,r)=>s+r.Fat_Real,0).toFixed(2)}`);
-      console.log(`🔍 Abr/2026: ${_abr26.length} regs, Fat_Real total: ${_abr26.reduce((s,r)=>s+r.Fat_Real,0).toFixed(2)}`);
+      if(vendasMB[0]) console.log('🔍 vlrLiq sample:', vendasMB[0]['Vlr Líquido'], '|', vendasMB[0]['Vlr_Liquido'], '|', vendasMB[0]['Vlr Liquido']);
       syncOsTypes(DB.mb);
       syncOSFromFile(DB.mb);
       syncSegmentos(DB.mb);
