@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.1.1 -->
+<!-- De Nigris Cockpit v4 | Versao: V4.1.2 -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -9800,6 +9800,7 @@ async function _sincronizarTudoDoSheets(){
 
     // ── Metas MB e MC ─────────────────────────────────────────────
     setLoad(88, '🎯 Buscando metas…');
+    METAS = {}; // reset antes de recarregar
     for(const env of ['mb','mc']){
       const metas = await lerDoSheets('metas', env);
       if(metas && metas.length > 0){
