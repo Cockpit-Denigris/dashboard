@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v3 | Versao: V4.0.4 | Gerado em: 11/05/2026 | Fix1-51: anteriores | Fix52: "Google Sheets" → "Banco de Dados" na tela de loading | Fix52b: Curva ABC/D sobe acima de Mobilidade no Estoque (MB e MC) | Fix53: _detectFilialCidade reconhece SJC/DN SJC/São José e Roseira | Fix54: coluna "valor" aceita como alias de CUSTO TOTAL no Estoque MB/MC _detectFilialCidade reconhece SJC/DN SJC/São José e Roseira com normalização de acento e case -->
+<!-- De Nigris Cockpit v3 | Versao: V4.0.5 | Gerado em: 11/05/2026 | Fix1-51: anteriores | Fix52: "Google Sheets" → "Banco de Dados" na tela de loading | Fix52b: Curva ABC/D sobe acima de Mobilidade no Estoque (MB e MC) | Fix53: _detectFilialCidade reconhece SJC/DN SJC/São José e Roseira | Fix54: coluna "valor" aceita como alias de CUSTO TOTAL no Estoque MB/MC _detectFilialCidade reconhece SJC/DN SJC/São José e Roseira com normalização de acento e case -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -7100,12 +7100,14 @@ function _parseDMSRow(r, env) {
   const filial = mapFilial(String(filialRaw).trim()) || String(filialRaw).trim();
   if(!filial) return null;
 
-  const vlrLiq   = parseFloat(String((r['Vlr_Liquido'] || r['Vlr_L\u00edquido'] || _getCol(r,'Vlr_Liquido','Vlr_Liquido'))||0).replace(',','.')) || 0;
-  const custo    = parseFloat(String(_getCol(r,'Custo')||0).replace(',','.')) || 0;
-  const lucroR   = parseFloat(String(_getCol(r,'Lucro')||0).replace(',','.')) || 0;
-  const lucroPct = parseFloat(String(_getCol(r,'%_Lucro','% Lucro')||0).replace(',','.')) || 0;
-  const qtde     = parseFloat(String(_getCol(r,'Qtde')||0).replace(',','.')) || 0;
-  const vlrItem  = parseFloat(String(_getCol(r,'Valor_Item','Valor Item')||0).replace(',','.')) || 0;
+  // Parser numérico BR: remove ponto de milhar, troca vírgula decimal por ponto
+  const _pBR = v => parseFloat(String(v||0).replace(/\./g,'').replace(',','.')) || 0;
+  const vlrLiq   = _pBR(r['Vlr_Liquido'] || r['Vlr_L\u00edquido'] || _getCol(r,'Vlr_Liquido'));
+  const custo    = _pBR(_getCol(r,'Custo'));
+  const lucroR   = _pBR(_getCol(r,'Lucro'));
+  const lucroPct = _pBR(_getCol(r,'%_Lucro','% Lucro'));
+  const qtde     = _pBR(_getCol(r,'Qtde'));
+  const vlrItem  = _pBR(_getCol(r,'Valor_Item','Valor Item'));
 
   const deptoRaw = _getCol(r,'Departamento') || '';
   const canal    = mapCanal(deptoRaw);
