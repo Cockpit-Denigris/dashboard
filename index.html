@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.0.7 -->
+<!-- De Nigris Cockpit v4 | Versao: V4.0.8 -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -9804,16 +9804,26 @@ async function _sincronizarTudoDoSheets(){
           // Mapeamento indicador DRE → chave interna
           const indMap = {
             'receitas bruta': 'RB', 'receita bruta': 'RB',
-            'receitas vendas-balção/telepçs': 'FAT_TELE', 'receitas vendas-balcão/telepeças': 'FAT_TELE',
+            'receitas vendas-balção/telepçs': 'FAT_TELE', 'receitas vendas-balcão/telepeças': 'FAT_TELE', 'receitas vendas-balcão/telepçs': 'FAT_TELE', 'receitas vendas-balcao/telepcs': 'FAT_TELE', 'receitas vendas-balcao/telepecas': 'FAT_TELE',
             'receitas vendas- peças oficina': 'FAT_OFIC', 'receitas vendas-peças oficina': 'FAT_OFIC',
             'receitas bonificações': 'BON', 'receitas bonificacoes': 'BON',
             'receitas liquidas': 'FAT_LIQ', 'receitas líquidas': 'FAT_LIQ',
             'resultado departamental': 'RD_R', 'resultado dep.': 'RD_R',
             'lucro bruto': 'LB_R',
           };
-          const indKey = indMap[indicador.toLowerCase()] || indicador;
-          const canal = indicador.toLowerCase().includes('telepe') || indicador.toLowerCase().includes('balc') ? 'Telepeças/Balcão' :
-                        indicador.toLowerCase().includes('ofic') ? 'Oficina/Funilaria' : 'GERAL';
+          const _indLow = indicador.toLowerCase();
+          const indKey = indMap[_indLow] || (
+            (_indLow.includes('balc') || _indLow.includes('telep')) && !_indLow.includes('ofic') ? 'FAT_TELE' :
+            _indLow.includes('ofic') ? 'FAT_OFIC' :
+            _indLow.includes('funila') ? 'FAT_OFIC' :
+            (_indLow.includes('receita') || _indLow.includes('receitas')) && _indLow.includes('liq') ? 'FAT_LIQ' :
+            (_indLow.includes('receita') || _indLow.includes('receitas')) && _indLow.includes('brut') ? 'RB' :
+            _indLow.includes('lucro') ? 'LB_R' :
+            _indLow.includes('resultado') ? 'RD_R' :
+            indicador
+          );
+          const canal = _indLow.includes('telep') || _indLow.includes('balc') ? 'Telepeças/Balcão' :
+                        _indLow.includes('ofic') || _indLow.includes('funila') ? 'Oficina/Funilaria' : 'GERAL';
           // Expandir meses 1..12
           for(let mes = 1; mes <= 12; mes++){
             const val = parseFloat(String(row[String(mes)] || row[mes] || 0).toString().replace(',','.')) || 0;
