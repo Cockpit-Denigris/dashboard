@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v3 | Versao: V4.0.0 | Gerado em: 11/05/2026 | Fix1-51: anteriores | Fix52: "Google Sheets" → "Banco de Dados" na tela de loading | Fix52b: Curva ABC/D sobe acima de Mobilidade no Estoque (MB e MC) | Fix53: _detectFilialCidade reconhece SJC/DN SJC/São José e Roseira | Fix54: coluna "valor" aceita como alias de CUSTO TOTAL no Estoque MB/MC _detectFilialCidade reconhece SJC/DN SJC/São José e Roseira com normalização de acento e case -->
+<!-- De Nigris Cockpit v3 | Versao: V4.0.2 | Gerado em: 11/05/2026 | Fix1-51: anteriores | Fix52: "Google Sheets" → "Banco de Dados" na tela de loading | Fix52b: Curva ABC/D sobe acima de Mobilidade no Estoque (MB e MC) | Fix53: _detectFilialCidade reconhece SJC/DN SJC/São José e Roseira | Fix54: coluna "valor" aceita como alias de CUSTO TOTAL no Estoque MB/MC _detectFilialCidade reconhece SJC/DN SJC/São José e Roseira com normalização de acento e case -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -7100,7 +7100,7 @@ function _parseDMSRow(r, env) {
   const filial = mapFilial(String(filialRaw).trim()) || String(filialRaw).trim();
   if(!filial) return null;
 
-  const vlrLiq   = parseFloat(String(_getCol(r,'Vlr_Líquido','Vlr_Liquido')||0).replace(',','.')) || 0;
+  const vlrLiq   = parseFloat(String(_getCol(r,'Vlr_Liquido')||0).replace(',','.')) || 0;
   const custo    = parseFloat(String(_getCol(r,'Custo')||0).replace(',','.')) || 0;
   const lucroR   = parseFloat(String(_getCol(r,'Lucro')||0).replace(',','.')) || 0;
   const lucroPct = parseFloat(String(_getCol(r,'%_Lucro','% Lucro')||0).replace(',','.')) || 0;
@@ -7109,7 +7109,7 @@ function _parseDMSRow(r, env) {
 
   const deptoRaw = _getCol(r,'Departamento') || '';
   const canal    = mapCanal(deptoRaw);
-  const segmento = (_getCol(r,'Descrição_Grupo','Descricao_Grupo','Desc_Grupo') || '').replace(/\s*\[\d+\]\s*$/,'').replace(/^Mbc\s*\/\s*/i,'').trim();
+  const segmento = (_getCol(r,'Descricao_Grupo','Desc_Grupo') || '').replace(/\s*\[\d+\]\s*$/,'').replace(/^Mbc\s*\/\s*/i,'').trim();
   const vendedor = _getCol(r,'Nome_Vendedor') || '—';
   const tipoOS   = _getCol(r,'Tp_OS') || '';
   const nrOS     = _getCol(r,'Nr_OS') || '';
@@ -9628,7 +9628,7 @@ async function _sincronizarTudoDoSheets(){
       DB.mb = vendasMB.map(r => _parseDMSRow(r, 'mb')).filter(Boolean);
       const _mar26 = DB.mb.filter(r=>r.Ano===2026&&r.Mês_Num===3);
       console.log(`🔍 Mar/2026: ${_mar26.length} regs, Fat_Real total: ${_mar26.reduce((s,r)=>s+r.Fat_Real,0).toFixed(2)}`);
-      if(vendasMB[0]) console.log('🔍 vlrLiq sample:', vendasMB[0]['Vlr Líquido'], '|', vendasMB[0]['Vlr_Liquido'], '|', vendasMB[0]['Vlr Liquido']);
+      if(vendasMB[0]) console.log('🔍 vlrLiq sample:', vendasMB[0]['Vlr_Liquido']);
       syncOsTypes(DB.mb);
       syncOSFromFile(DB.mb);
       syncSegmentos(DB.mb);
