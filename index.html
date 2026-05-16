@@ -2028,9 +2028,9 @@ const CSV_CONFIG = {
 };
 
 async function lerCSVDireto(gid){
-  const url = CSV_CONFIG.baseUrl + gid;
+  const url = CSV_CONFIG.baseUrl + gid + '&t=' + Date.now();
   try {
-    const resp = await fetch(url);
+    const resp = await fetch(url, { cache: 'no-store' });
     if(!resp.ok) return null;
     const text = await resp.text();
     return parseCSVText(text);
