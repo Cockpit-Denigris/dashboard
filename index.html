@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v3 | Versao: V4.0.3 | Gerado em: 11/05/2026 | Fix1-51: anteriores | Fix52: "Google Sheets" → "Banco de Dados" na tela de loading | Fix52b: Curva ABC/D sobe acima de Mobilidade no Estoque (MB e MC) | Fix53: _detectFilialCidade reconhece SJC/DN SJC/São José e Roseira | Fix54: coluna "valor" aceita como alias de CUSTO TOTAL no Estoque MB/MC _detectFilialCidade reconhece SJC/DN SJC/São José e Roseira com normalização de acento e case -->
+<!-- De Nigris Cockpit v3 | Versao: V4.0.4 | Gerado em: 11/05/2026 | Fix1-51: anteriores | Fix52: "Google Sheets" → "Banco de Dados" na tela de loading | Fix52b: Curva ABC/D sobe acima de Mobilidade no Estoque (MB e MC) | Fix53: _detectFilialCidade reconhece SJC/DN SJC/São José e Roseira | Fix54: coluna "valor" aceita como alias de CUSTO TOTAL no Estoque MB/MC _detectFilialCidade reconhece SJC/DN SJC/São José e Roseira com normalização de acento e case -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -9627,7 +9627,10 @@ async function _sincronizarTudoDoSheets(){
       if(vendasMB[0]) console.log('🔍 Colunas CSV:', Object.keys(vendasMB[0]).join(' | '));
       DB.mb = vendasMB.map(r => _parseDMSRow(r, 'mb')).filter(Boolean);
       const _mar26 = DB.mb.filter(r=>r.Ano===2026&&r.Mês_Num===3);
-      console.log(`🔍 Mar/2026: ${_mar26.length} regs, Fat_Real total: ${_mar26.reduce((s,r)=>s+r.Fat_Real,0).toFixed(2)}`);
+      const _mar26sum = _mar26.reduce((s,r)=>s+r.Fat_Real,0);
+      console.log(`🔍 Mar/2026: ${_mar26.length} regs, Fat_Real total: ${_mar26sum.toFixed(2)}`);
+      // Sample first 3 rows of March to debug
+      _mar26.slice(0,3).forEach((r,i)=>console.log(`🔍 Mar row${i}: Fat_Real=${r.Fat_Real}, Filial=${r.Filial}, fonte=${r._fonte}`));
       if(vendasMB[0]) console.log('🔍 vlrLiq sample:', vendasMB[0]['Vlr_Liquido']);
       syncOsTypes(DB.mb);
       syncOSFromFile(DB.mb);
