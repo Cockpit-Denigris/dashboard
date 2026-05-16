@@ -7063,9 +7063,20 @@ async function _processFileQueue(files){
 ─────────────────────────────────────────────────────────────────────────── */
 // ── Parser de linha nativa do DMS vinda do Sheets ────────────
 // Converte colunas originais do DMS para o formato interno do DB
+function _normCol(s){ return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
+function _getCol(r, ...names){
+  // Busca coluna normalizando acentos e case
+  for(const name of names){
+    const norm = _normCol(name);
+    const key = Object.keys(r).find(k => _normCol(k) === norm);
+    if(key !== undefined && r[key] !== undefined && r[key] !== '') return r[key];
+  }
+  return '';
+}
+
 function _parseDMSRow(r, env) {
   // Extrair data de emissão → Ano e Mês_Num
-  const emissaoRaw = r['Emissao'] || r['Emissão'] || r['emissao'] || '';
+  const emissaoRaw = _getCol(r, 'Emissão', 'Emissao', 'emissao', 'Data', 'Dt. Emis.');
   let ano = 0, mes = 0;
   if(emissaoRaw){
     // Suporta DD/MM/YYYY, YYYY-MM-DD, JS Date string e objetos Date
@@ -7085,29 +7096,29 @@ function _parseDMSRow(r, env) {
   }
   if(!ano || !mes) return null;
 
-  const filialRaw = r['Filial'] || r['FILIAL'] || r['Empresa'] || '';
+  const filialRaw = _getCol(r, 'Filial', 'FILIAL', 'Empresa', 'empresa');
   const filial = mapFilial(String(filialRaw).trim()) || String(filialRaw).trim();
   if(!filial) return null;
 
-  const vlrLiq   = parseFloat(String(r['Vlr Líquido'] || r['Vlr Líquido Venda'] || r['Vlr_Liquido'] || r['Vlr Liquido'] || 0).replace(',','.')) || 0;
-  const custo    = parseFloat(String(r['Custo']         || 0).replace(',','.')) || 0;
-  const lucroR   = parseFloat(String(r['Lucro']         || 0).replace(',','.')) || 0;
-  const lucroPct = parseFloat(String(r['Pct_Lucro']     || r['% Lucro'] || 0).replace(',','.')) || 0;
-  const qtde     = parseFloat(String(r['Qtde']          || 0).replace(',','.')) || 0;
-  const vlrItem  = parseFloat(String(r['Valor_Item']    || r['Valor Item'] || 0).replace(',','.')) || 0;
+  const vlrLiq   = parseFloat(String(_getCol(r,'Vlr Líquido','Vlr Liquido','Vlr_Liquido','Vlr Lquido')||0).replace(',','.')) || 0;
+  const custo    = parseFloat(String(_getCol(r,'Custo','custo') || 0).replace(',','.')) || 0;
+  const lucroR   = parseFloat(String(_getCol(r,'Lucro','lucro') || 0).replace(',','.')) || 0;
+  const lucroPct = parseFloat(String(_getCol(r,'% Lucro','Pct_Lucro','pct_lucro') || 0).replace(',','.')) || 0;
+  const qtde     = parseFloat(String(_getCol(r,'Qtde','qtde','Quantidade') || 0).replace(',','.')) || 0;
+  const vlrItem  = parseFloat(String(_getCol(r,'Valor Item','Valor_Item') || 0).replace(',','.')) || 0;
 
-  const deptoRaw = r['Departamento'] || '';
+  const deptoRaw = _getCol(r,'Departamento','departamento') || '';
   const canal    = mapCanal(deptoRaw);
-  const segmento = (r['Desc_Grupo']  || r['Descrição Grupo'] || r['Desc_SubGrupo'] || '').replace(/\s*\[\d+\]\s*$/,'').replace(/^Mbc\s*\/\s*/i,'').trim();
-  const vendedor = r['Nome_Vendedor'] || r['Nome Vendedor'] || '—';
-  const tipoOS   = r['Tp_OS']  || r['Tp OS']  || '';
-  const nrOS     = r['Nr_OS']  || r['Nr OS']  || '';
-  const cliente  = r['Nome_Cliente'] || r['Nome Cliente'] || '';
-  const cnpjCpf  = r['CpfCnpj'] || r['CPF/CNPJ'] || '';
-  const cidade   = r['Cidade'] || '';
-  const codProd  = r['Cod_Item'] || r['Cód. Item'] || r['Código'] || '';
-  const sit      = String(r['Sit'] || r['Situacao'] || r['Situação'] || '').toLowerCase();
-  const fonte    = r['origem'] || 'dms';
+  const segmento = (_getCol(r,'Descrição Grupo','Descricao Grupo','Desc_Grupo','Descrição Sub-Grupo','Desc_SubGrupo') || '').replace(/\s*\[\d+\]\s*$/,'').replace(/^Mbc\s*\/\s*/i,'').trim();
+  const vendedor = _getCol(r,'Nome Vendedor','Nome_Vendedor') || '—';
+  const tipoOS   = _getCol(r,'Tp OS','Tp_OS') || '';
+  const nrOS     = _getCol(r,'Nr OS','Nr_OS') || '';
+  const cliente  = _getCol(r,'Nome Cliente','Nome_Cliente') || '';
+  const cnpjCpf  = _getCol(r,'CPF/CNPJ','CpfCnpj') || '';
+  const cidade   = _getCol(r,'Cidade','cidade') || '';
+  const codProd  = _getCol(r,'Cod. Item','Cód. Item','Cod_Item','Código','Codigo') || '';
+  const sit      = String(_getCol(r,'Sit','Situação','Situacao') || '').toLowerCase();
+  const fonte    = _getCol(r,'origem','Origem') || 'dms';
 
   // Ignorar cancelados
   if(sit.includes('cancel')) return null;
