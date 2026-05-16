@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.0.9-debug -->
+<!-- De Nigris Cockpit v4 | Versao: V4.0.9 -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -3611,7 +3611,6 @@ function aggMetaMes(env,rows,ind,canal,m){
   const anosNoDado=[...new Set(rows.map(r=>String(r.Ano)))];
   const fils=F[env].filial.has('all')?[...new Set(rows.map(r=>r.Filial))]:[...F[env].filial];
   let tot=0;
-  if(ind==='FAT_TELE' && m<=3) console.log('[LOOKUP_TELE] ind='+ind+' canal='+canal+' m='+m+' fils='+JSON.stringify(fils)+' anos='+JSON.stringify(anosNoDado));
   const canalEfetivo = (canal==='GERAL' && (ind==='LB_R'||ind==='LB'||ind==='RD_R'||ind==='RD'))
     ? _detectCanalMeta(env,rows) : canal;
   fils.forEach(fil=>anosNoDado.forEach(ano=>{tot+=getMeta(fil,ind,canalEfetivo,+ano,m);}));
@@ -4389,6 +4388,7 @@ function renderKpis(env,rows,rowsYTD){
   const fatReal=sm(rows,'Fat_Real');
 
   const indsToShow=depto?INDS.filter(k=>['fat','lb','rd'].includes(k.key)):INDS;
+  if(depto) wrap.style.gridTemplateColumns='repeat('+indsToShow.length+',1fr)'; else wrap.style.gridTemplateColumns='';
 
   indsToShow.forEach(k=>{
     // ── Realizado em R$ (base para atingimento) ───────────────────────────
@@ -4465,7 +4465,7 @@ function renderKpis(env,rows,rowsYTD){
     }
 
     const d=document.createElement('div');
-    d.className='kcard'+(depto?' kcard-solo':'');
+    d.className='kcard';
     d.style.borderBottom=`3px solid ${col}`;
     d.onclick=()=>explode(env,k.key);
     d.innerHTML=`<span class="kc-hint">🔍</span>
@@ -9829,7 +9829,6 @@ async function _sincronizarTudoDoSheets(){
           for(let mes = 1; mes <= 12; mes++){
             const val = parseFloat(String(row[String(mes)] || row[mes] || 0).toString().replace(',','.')) || 0;
             const k = mkKey(filial, indKey, canal, ano, mes);
-            if(indKey==='FAT_TELE' && mes<=3) console.log('[META_TELE]', k, '=', val);
             METAS[k] = val;
             metasCount++;
           }
