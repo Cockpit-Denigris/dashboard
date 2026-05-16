@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.0.9 -->
+<!-- De Nigris Cockpit v4 | Versao: V4.1.0 -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -3517,8 +3517,14 @@ function todosAnosTêmMeta(env, rows){
   const anos=[...new Set(rows.map(r=>r.Ano))];
   if(!anos.length) return false;
   const fils=F[env].filial.has('all')?[...new Set(rows.map(r=>r.Filial))]:[...F[env].filial];
-  return anos.every(ano=>{
-    // Verificar se existe ao menos 1 chave de meta para este ano
+  const canalAtivo = activeDepto(env);
+  return anos.some(ano=>{
+    // Se canal ativo, verificar só o canal específico; senão verifica todos
+    if(canalAtivo==='Telepeças/Balcão'){
+      return fils.some(fil=>[1,2,3,4,5,6,7,8,9,10,11,12].some(m=>getMeta(fil,'FAT_TELE','Telepeças/Balcão',+ano,m)>0));
+    } else if(canalAtivo==='Oficina/Funilaria'){
+      return fils.some(fil=>[1,2,3,4,5,6,7,8,9,10,11,12].some(m=>getMeta(fil,'FAT_OFIC','Oficina/Funilaria',+ano,m)>0));
+    }
     const inds=['FAT_LIQ','FAT_TELE','FAT_OFIC','RB','LB_R','RD_R'];
     const canais=['GERAL','Telepeças/Balcão','Oficina/Funilaria'];
     return inds.some(ind=>fils.some(fil=>canais.some(can=>[1,2,3,4,5,6,7,8,9,10,11,12].some(m=>getMeta(fil,ind,can,+ano,m)>0))));
