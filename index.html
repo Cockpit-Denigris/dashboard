@@ -3520,7 +3520,8 @@ function todosAnosTêmMeta(env, rows){
   return anos.every(ano=>{
     // Verificar se existe ao menos 1 chave de meta para este ano
     const inds=['FAT_LIQ','FAT_TELE','FAT_OFIC','RB','LB_R','RD_R'];
-    return inds.some(ind=>fils.some(fil=>[1,2,3,4,5,6,7,8,9,10,11,12].some(m=>getMeta(fil,ind,'GERAL',+ano,m)>0)));
+    const canais=['GERAL','Telepeças/Balcão','Oficina/Funilaria'];
+    return inds.some(ind=>fils.some(fil=>canais.some(can=>[1,2,3,4,5,6,7,8,9,10,11,12].some(m=>getMeta(fil,ind,can,+ano,m)>0))));
   });
 }
 
