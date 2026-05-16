@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.1.1-debug -->
+<!-- De Nigris Cockpit v4 | Versao: V4.1.1 -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -3619,10 +3619,8 @@ function aggMetaMes(env,rows,ind,canal,m){
   let tot=0;
   const canalEfetivo = (canal==='GERAL' && (ind==='LB_R'||ind==='LB'||ind==='RD_R'||ind==='RD'))
     ? _detectCanalMeta(env,rows) : canal;
-  if(ind==='FAT_OFIC' && m===1) console.log('[OFIC_MES1] fils='+JSON.stringify(fils)+' anos='+JSON.stringify(anosNoDado)+' canalEfetivo='+canalEfetivo);
   fils.forEach(fil=>anosNoDado.forEach(ano=>{
     const v=getMeta(fil,ind,canalEfetivo,+ano,m);
-    if(ind==='FAT_OFIC' && m===1) console.log('[OFIC_MES1] getMeta('+fil+','+ind+','+canalEfetivo+','+ano+','+m+')='+v);
     tot+=v;
   }));
   return tot;
@@ -9840,7 +9838,7 @@ async function _sincronizarTudoDoSheets(){
           for(let mes = 1; mes <= 12; mes++){
             const val = parseFloat(String(row[String(mes)] || row[mes] || 0).toString().replace(',','.')) || 0;
             const k = mkKey(filial, indKey, canal, ano, mes);
-            METAS[k] = val;
+            METAS[k] = (METAS[k]||0) + val;
             metasCount++;
           }
         });
