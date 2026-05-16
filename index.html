@@ -9713,7 +9713,8 @@ async function _sincronizarTudoDoSheets(){
         // Agrupar por filial|ano|mes e construir rows do DB
         const dreMap = {};
         dreRows.forEach(row => {
-          const filial = String(row.FILIAL || row.filial || '').trim();
+          const filialRawDRE = String(row.FILIAL || row.filial || '').trim();
+          const filial = mapFilial(filialRawDRE) || filialRawDRE;
           const tipo   = String(row.TIPO   || row.tipo   || '').trim().toLowerCase();
           const ano    = parseInt(row.ano || row.ANO || 0);
           if(!filial || !tipo || !ano) return;
@@ -10295,7 +10296,7 @@ function getEstFiltered(env){
 function initEstFilters(env){
   const snaps=EST_DATA[env].snapshots;
   const keys=Object.keys(snaps).sort();
-  if(!keys.length){ renderEstoque(env); return; }
+  if(!keys.length){ const fc0=document.getElementById(`chips-est-fil-${env}`); if(fc0) fc0.innerHTML=""; renderEstoque(env); return; }
 
   const allItemsRaw=Object.values(snaps).flat();
   // ✅ FIX: filtrar itens pelo núcleo do usuário antes de inicializar
@@ -10304,7 +10305,7 @@ function initEstFilters(env){
     ? allItemsRaw.filter(i => authFilsEst.some(af => af.toLowerCase()===(i.filial||'').toLowerCase()))
     : allItemsRaw;
   // Se não há itens para este núcleo, mostrar estoque vazio
-  if(!allItems.length && authFilsEst && authFilsEst.length){ renderEstoque(env); return; }
+  if(!allItems.length && authFilsEst && authFilsEst.length){ const fc0=document.getElementById(`chips-est-fil-${env}`); if(fc0) fc0.innerHTML=""; renderEstoque(env); return; }
   const filiais=[...new Set(allItems.map(i=>i.filial))].sort();
   const mobs=[...new Set(allItems.map(i=>i.mobCls))].filter(Boolean);
 
