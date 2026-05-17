@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.1.4-debug -->
+<!-- De Nigris Cockpit v4 | Versao: V4.1.4 -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -9824,12 +9824,13 @@ async function _sincronizarTudoDoSheets(){
             'lucro bruto': 'LB_R',
           };
           const _indLow = indicador.toLowerCase();
+          const _isCusto = _indLow.includes('custo');
           const indKey = indMap[_indLow] || (
-            (_indLow.includes('balc') || _indLow.includes('telep')) && !_indLow.includes('ofic') ? 'FAT_TELE' :
-            _indLow.includes('ofic') ? 'FAT_OFIC' :
-            _indLow.includes('funila') ? 'FAT_OFIC' :
-            (_indLow.includes('receita') || _indLow.includes('receitas')) && _indLow.includes('liq') ? 'FAT_LIQ' :
-            (_indLow.includes('receita') || _indLow.includes('receitas')) && _indLow.includes('brut') ? 'RB' :
+            !_isCusto && (_indLow.includes('balc') || _indLow.includes('telep')) && !_indLow.includes('ofic') ? 'FAT_TELE' :
+            !_isCusto && _indLow.includes('ofic') ? 'FAT_OFIC' :
+            !_isCusto && _indLow.includes('funila') ? 'FAT_OFIC' :
+            !_isCusto && (_indLow.includes('receita') || _indLow.includes('receitas')) && _indLow.includes('liq') ? 'FAT_LIQ' :
+            !_isCusto && (_indLow.includes('receita') || _indLow.includes('receitas')) && _indLow.includes('brut') ? 'RB' :
             _indLow.includes('lucro') ? 'LB_R' :
             _indLow.includes('resultado') ? 'RD_R' :
             indicador
@@ -9840,7 +9841,6 @@ async function _sincronizarTudoDoSheets(){
           for(let mes = 1; mes <= 12; mes++){
             const val = parseFloat(String(row[String(mes)] || row[mes] || 0).toString().replace(',','.')) || 0;
             const k = mkKey(filial, indKey, canal, ano, mes);
-            if(mes===1 && (indKey==='FAT_TELE'||indKey==='FAT_OFIC'||indKey==='FAT_LIQ')) console.log('[META_MAP] indicador='+indicador+' → indKey='+indKey+' canal='+canal+' filial='+filial+' jan='+val);
             _metasTemp[k] = (_metasTemp[k]||0) + val;
             metasCount++;
           }
