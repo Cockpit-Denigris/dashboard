@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.1.3 -->
+<!-- De Nigris Cockpit v4 | Versao: V4.1.4-debug -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -9840,6 +9840,7 @@ async function _sincronizarTudoDoSheets(){
           for(let mes = 1; mes <= 12; mes++){
             const val = parseFloat(String(row[String(mes)] || row[mes] || 0).toString().replace(',','.')) || 0;
             const k = mkKey(filial, indKey, canal, ano, mes);
+            if(mes===1 && (indKey==='FAT_TELE'||indKey==='FAT_OFIC'||indKey==='FAT_LIQ')) console.log('[META_MAP] indicador='+indicador+' → indKey='+indKey+' canal='+canal+' filial='+filial+' jan='+val);
             _metasTemp[k] = (_metasTemp[k]||0) + val;
             metasCount++;
           }
