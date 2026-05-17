@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.1.2 -->
+<!-- De Nigris Cockpit v4 | Versao: V4.1.3 -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -9805,6 +9805,7 @@ async function _sincronizarTudoDoSheets(){
       const metas = await lerDoSheets('metas', env);
       if(metas && metas.length > 0){
         let metasCount = 0;
+        const _metasTemp = {}; // acumula antes de gravar em METAS
         metas.forEach(row => {
           // Novo formato horizontal: filial | ano | indicador | 1..12
           const filialRawMeta = row.filial || row.FILIAL || '';
@@ -9839,11 +9840,12 @@ async function _sincronizarTudoDoSheets(){
           for(let mes = 1; mes <= 12; mes++){
             const val = parseFloat(String(row[String(mes)] || row[mes] || 0).toString().replace(',','.')) || 0;
             const k = mkKey(filial, indKey, canal, ano, mes);
-            METAS[k] = (METAS[k]||0) + val;
+            _metasTemp[k] = (_metasTemp[k]||0) + val;
             metasCount++;
           }
         });
         renderMetaTable();
+        Object.assign(METAS, _metasTemp);
         console.log(`✅ Metas ${env.toUpperCase()} carregadas do Sheets: ${metas.length} registros (${metasCount} entradas)`);
       }
     }
