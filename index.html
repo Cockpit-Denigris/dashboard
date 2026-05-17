@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.1.4 -->
+<!-- De Nigris Cockpit v4 | Versao: V4.1.5 -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -3537,16 +3537,21 @@ function todosAnosTêmMeta(env, rows){
    - Todos → FAT_LIQ GERAL        (L3+L4+L5)                              */
 function _fatPlan(env,rows){
   const depto=activeDepto(env);
-  if(depto===CANAL_TELE) return aggMeta(env,rows,'FAT_TELE',CANAL_TELE);
-  if(depto===CANAL_OFIC) return aggMeta(env,rows,'FAT_OFIC',CANAL_OFIC);
-  // GERAL: usa FAT_LIQ (L3+L4+L5) gravado na importação; fallback soma canais
+  const deptoSet=F[env].depto;
+  const ambos=deptoSet.has(CANAL_TELE)&&deptoSet.has(CANAL_OFIC);
+  if(!ambos && depto===CANAL_TELE) return aggMeta(env,rows,'FAT_TELE',CANAL_TELE);
+  if(!ambos && depto===CANAL_OFIC) return aggMeta(env,rows,'FAT_OFIC',CANAL_OFIC);
+  // GERAL ou ambos canais: usa FAT_LIQ (L3+L4+L5); fallback soma canais
   return aggMeta(env,rows,'FAT_LIQ','GERAL')
       || aggMeta(env,rows,'FAT_TELE',CANAL_TELE)+aggMeta(env,rows,'FAT_OFIC',CANAL_OFIC);
 }
 function _fatPlanMes(env,rows,m){
   const depto=activeDepto(env);
-  if(depto===CANAL_TELE) return aggMetaMes(env,rows,'FAT_TELE',CANAL_TELE,m);
-  if(depto===CANAL_OFIC) return aggMetaMes(env,rows,'FAT_OFIC',CANAL_OFIC,m);
+  const deptoSet=F[env].depto;
+  const ambos=deptoSet.has(CANAL_TELE)&&deptoSet.has(CANAL_OFIC);
+  if(!ambos && depto===CANAL_TELE) return aggMetaMes(env,rows,'FAT_TELE',CANAL_TELE,m);
+  if(!ambos && depto===CANAL_OFIC) return aggMetaMes(env,rows,'FAT_OFIC',CANAL_OFIC,m);
+  // GERAL ou ambos canais: usa FAT_LIQ; fallback soma canais
   return aggMetaMes(env,rows,'FAT_LIQ','GERAL',m)
       || aggMetaMes(env,rows,'FAT_TELE',CANAL_TELE,m)+aggMetaMes(env,rows,'FAT_OFIC',CANAL_OFIC,m);
 }
