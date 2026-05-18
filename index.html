@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.2.7 -->
+<!-- De Nigris Cockpit v4 | Versao: V4.2.8 -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -12615,7 +12615,7 @@ async function gsRefreshAll(){
     {k:'dms_mb',     pct:10, msg:'Carregando DMS Peças MB...',      fn:()=>gsLoadDMS('mb')},
     {k:'dms_mc',     pct:22, msg:'Carregando DMS Pneus MC...',      fn:()=>gsLoadDMS('mc')},
     {k:'dre',        pct:35, msg:'Carregando DRE Gerencial...',      fn:()=>gsLoadDRE()},
-    {k:'os_tipos',   pct:48, msg:'Carregando Tipos de OS...',        fn:()=>gsLoadOSTipos()},
+    {k:'os_tipos',   pct:48, msg:'Carregando Tipos de OS...',        fn:()=>gsLoadOSTipos(), alwaysRun:true},
     {k:'metas_mb',   pct:58, msg:'Carregando Metas MB...',           fn:()=>gsLoadMetas('mb')},
     {k:'metas_mc',   pct:66, msg:'Carregando Metas MC...',           fn:()=>gsLoadMetas('mc')},
     {k:'estoque',    pct:78, msg:'Carregando Estoque MB...',         fn:()=>gsLoadEstoque()},
@@ -12628,7 +12628,7 @@ async function gsRefreshAll(){
 
   try {
     for(const s of steps){
-      if(!GS_CONFIG[s.k] || !GS_CONFIG[s.k].trim()) continue;
+      if(!s.alwaysRun && (!GS_CONFIG[s.k] || !GS_CONFIG[s.k].trim())) continue;
       setP(s.pct, s.msg);
       try { results[s.k] = await s.fn(); }
       catch(e){ erros.push(s.msg.replace('...','') + ': ' + e.message); results[s.k]=0; }
