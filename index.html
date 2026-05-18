@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.2.8 -->
+<!-- De Nigris Cockpit v4 | Versao: V4.2.9-debug -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -5333,6 +5333,7 @@ function renderTblOS(rows, _env){
   const wrap=document.getElementById('tbl-os-'+env); if(!wrap)return;
   const q=(document.getElementById('os-search')?.value||'').toLowerCase();
   const selectedAnos=[...F[env].osAnos].sort();
+  console.log('[OS_DEBUG] rows='+rows.length+' osAnos='+JSON.stringify([...F[env].osAnos])+' selectedAnos='+JSON.stringify(selectedAnos)+' DB_os='+DB[env].filter(r=>r._fonte==='os').length);
   if(!selectedAnos.length){wrap.innerHTML='<div class="empty-box">Selecione ao menos um ano.</div>';return;}
 
   // Usar APENAS linhas do arquivo OS (_fonte==='os') para esta tabela
