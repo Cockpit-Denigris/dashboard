@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.2.1 -->
+<!-- De Nigris Cockpit v4 | Versao: V4.2.2 -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -5164,14 +5164,16 @@ function renderCanais(env,rows){
   // Participação sempre sobre todos os canais (sem filtro de depto)
   // DRE tem prioridade: para cada filial|ano|mes com DRE, descarta linhas DMS
   const _afFull = window._authFiliais;
-  const rowsFull=applyDREPriority(DB[env].filter(r=>{
-    if(r._fonte==='os') return false;
-    if(_afFull && _afFull.length && !_afFull.includes(r.Filial)) return false;
+  const _afFullNorm = _afFull ? _afFull.map(_normFil) : null;
+  // Canal chart: usa DMS direto (sem applyDREPriority) pois DRE não tem dados por canal
+  const rowsFull=DB[env].filter(r=>{
+    if(r._fonte==='os' || r._fonte==='dre') return false;
+    if(_afFullNorm && _afFullNorm.length && !_afFullNorm.includes(_normFil(r.Filial))) return false;
     if(!_filSnap.has('all') && !_filNormSnap.has(_normFil(r.Filial)))return false;
     if(!F[env].ano.has(String(r.Ano)))return false;
     if(!(F[env].mes.has('all')||F[env].mes.has(String(r.Mês_Num))))return false;
     return true;
-  }));
+  });
   const ms=months(rowsFull), lbl=ms.map(m=>MN[m-1]);
   let tot=0; const vals=[];
   cans.forEach(can=>{const v=sm(rowsFull.filter(r=>r.Canal===can),'Fat_Real');vals.push(v);tot+=v;});
