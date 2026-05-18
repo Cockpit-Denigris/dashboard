@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.1.9 -->
+<!-- De Nigris Cockpit v4 | Versao: V4.2.0 -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -5164,7 +5164,7 @@ function renderCanais(env,rows){
   const rowsFull=applyDREPriority(DB[env].filter(r=>{
     if(r._fonte==='os') return false;
     if(_afFull && _afFull.length && !_afFull.includes(r.Filial)) return false;
-    if(!(F[env].filial.has('all')||F[env].filial.has(r.Filial)))return false;
+    if(!F[env].filial.has('all') && !_filNormSet(env).has(_normFil(r.Filial)))return false;
     if(!F[env].ano.has(String(r.Ano)))return false;
     if(!(F[env].mes.has('all')||F[env].mes.has(String(r.Mês_Num))))return false;
     return true;
