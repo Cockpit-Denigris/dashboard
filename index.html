@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.1.8 -->
+<!-- De Nigris Cockpit v4 | Versao: V4.1.9-debug -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -9854,7 +9854,7 @@ async function _sincronizarTudoDoSheets(){
           }
         });
         renderMetaTable();
-        // FAT_LIQ = FAT_TELE + FAT_OFIC (igual ao HTML original: L3+L4+L5)
+        // FAT_LIQ = FAT_TELE + FAT_OFIC por filial (igual ao HTML original: L3+L4+L5)
         const _filsTemp = [...new Set(Object.keys(_metasTemp).map(k=>k.split('|')[0]))];
         const _anosTemp = [...new Set(Object.keys(_metasTemp).map(k=>k.split('|')[3]))];
         _filsTemp.forEach(fil=>{
@@ -9865,6 +9865,7 @@ async function _sincronizarTudoDoSheets(){
               const kLiq  = mkKey(fil,'FAT_LIQ','GERAL',+ano,m);
               const vTele = _metasTemp[kTele]||0;
               const vOfic = _metasTemp[kOfic]||0;
+              if(m===1) console.log('[FAT_LIQ_CALC] fil='+fil+' ano='+ano+' vTele='+vTele+' vOfic='+vOfic+' total='+(vTele+vOfic));
               if(vTele||vOfic) _metasTemp[kLiq] = vTele + vOfic;
             }
           });
