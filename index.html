@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.2.3 -->
+<!-- De Nigris Cockpit v4 | Versao: V4.2.4 -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -2022,6 +2022,7 @@ const SHEETS_CONFIG = {
 const CSV_CONFIG = {
   baseUrl: `https://docs.google.com/spreadsheets/d/${'1G7hQ6ewCJT-TGYsJAM8jAVcnl4SBnimyQCNiHBpevEw'}/export?format=csv&gid=`,
   vendas_mb:   '1084293724',
+  os_mb:       '4603933',
   vendas_mc:   '1695413500',
   estoque_mb:  '1482591986',
   estoque_mc:  '191265686',
@@ -7504,10 +7505,9 @@ function parseFatOfText(text, env){
   
   const osRows = [];
   let inPecas = false;
-  let pecasDone = false;   // após sair da seção Peças, nunca mais entrar
+  let pecasDone = false;
   let currentSection = '';
   
-  // Section detection keywords — ordem importa (mais específico primeiro)
   const SECTION_HEADERS = {
     'Mão de Obra': 'mao',
     'Mao de Obra': 'mao',
@@ -7536,7 +7536,6 @@ function parseFatOfText(text, env){
       );
       if(secKey){
         const newSec=SECTION_HEADERS[secKey];
-        // Se saímos de Peças para outra seção, marcar como done
         if(currentSection==='pecas' && newSec!=='pecas') pecasDone=true;
         currentSection=newSec;
         inPecas=(currentSection==='pecas');
@@ -12484,8 +12483,8 @@ async function gsLoadDRE(){
 // ── Atualizar tudo do Google Sheets ───────────────────────────
 // ── Carregar Tipo OS do Google Sheets ─────────────────────────
 async function gsLoadOSTipos(){
-  const url = GS_CONFIG.os_tipos;
-  if(!url) return 0;
+  const url = CSV_CONFIG.baseUrl + CSV_CONFIG.os_mb + '&t=' + Date.now();
+  if(!CSV_CONFIG.os_mb) return 0;
   const csv = await gsFetchCSV(url);
   const rows = gsParseCSV(csv);
   if(!rows.length) return 0;
