@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.1.5 -->
+<!-- De Nigris Cockpit v4 | Versao: V4.1.7-debug2 -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -3621,6 +3621,7 @@ function aggMeta(env,rows,ind,canal){
 function aggMetaMes(env,rows,ind,canal,m){
   const anosNoDado=[...new Set(rows.map(r=>String(r.Ano)))];
   const fils=F[env].filial.has('all')?[...new Set(rows.map(r=>r.Filial))]:[...F[env].filial];
+  if(ind==='FAT_LIQ' && m===1) console.log('[AGG_LIQ] isAll='+F[env].filial.has('all')+' filialSet='+JSON.stringify([...F[env].filial])+' fils='+JSON.stringify(fils)+' rowsFiliais='+JSON.stringify([...new Set(rows.map(r=>r.Filial))]));
   let tot=0;
   const canalEfetivo = (canal==='GERAL' && (ind==='LB_R'||ind==='LB'||ind==='RD_R'||ind==='RD'))
     ? _detectCanalMeta(env,rows) : canal;
@@ -4166,7 +4167,9 @@ function _baseFilter(env,r){
   if(_af && _af.length && !_af.includes(r.Filial)) return false;
   if(!F[env].filial.has('all') && !_filNormSet(env).has(_normFil(r.Filial))) return false;
   if(!(F[env].mes.has('all')||F[env].mes.has(String(r.Mês_Num))))return false;
-  if(!(F[env].depto.has('all')||F[env].depto.has(r.Canal)))return false;
+  const _deptoSet=F[env].depto;
+  const _ambosCanais=_deptoSet.has('Telepeças/Balcão')&&_deptoSet.has('Oficina/Funilaria');
+  if(!_ambosCanais && !(_deptoSet.has('all')||_deptoSet.has(r.Canal)))return false;
   return true;
 }
 // Rows exclusivos de Tipo OS (PDF "Resumo de Faturamento por Tipo de OS")
