@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.2.4 -->
+<!-- De Nigris Cockpit v4 | Versao: V4.2.5 -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -12489,7 +12489,15 @@ async function gsLoadOSTipos(){
   const rows = gsParseCSV(csv);
   if(!rows.length) return 0;
   // OS rows têm _fonte==='os' — parsear usando a mesma lógica do upload
-  const parsed = rows.map(r => Object.assign({}, r, { _fonte: 'os' }));
+  const parsed = rows.map(r => Object.assign({}, r, {
+    _fonte: 'os',
+    Ano: parseInt(r.Ano || r.ano || 0),
+    Mês_Num: parseInt(r['Mês_Num'] || r.Mes_Num || r.mes_num || r.Mês || 0),
+    Fat_Real: parseFloat(String(r.Fat_Real||0).replace(',','.'))||0,
+    LB_Real_R: parseFloat(String(r.LB_Real_R||0).replace(',','.'))||0,
+    LB_Real_Pct: parseFloat(String(r.LB_Real_Pct||0).replace(',','.'))||0,
+    Qtd_OS: parseInt(r.Qtd_OS||0),
+  }));
   // Remover OS anteriores do GS e adicionar novos
   ['mb','mc'].forEach(env => {
     DB[env] = (DB[env]||[]).filter(r => r._fonte !== 'os' || r._gsImport !== true);
