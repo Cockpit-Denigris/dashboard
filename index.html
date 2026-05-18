@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.2.5 -->
+<!-- De Nigris Cockpit v4 | Versao: V4.2.6 -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -7492,8 +7492,8 @@ function parseFatOfText(text, env){
       periodoStr=perM[0];
       const [,d1,m1,y1]=perM[1].match(/(\d{2})\/(\d{2})\/(\d{4})/);
       const [,d2,m2,y2]=perM[2].match(/(\d{2})\/(\d{2})\/(\d{4})/);
-      ano=parseInt(y1); mes=parseInt(m1);
-      if(m1!==m2) mes=parseInt(m1); // use start month
+      ano=parseInt(y1);
+      mes = (m1!==m2) ? 0 : parseInt(m1); // 0 = arquivo anual
     }
   }
   if(!ano){ ano=new Date().getFullYear(); mes=new Date().getMonth()+1; }
