@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.1.7 -->
+<!-- De Nigris Cockpit v4 | Versao: V4.1.8 -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -9854,6 +9854,21 @@ async function _sincronizarTudoDoSheets(){
           }
         });
         renderMetaTable();
+        // FAT_LIQ = FAT_TELE + FAT_OFIC (igual ao HTML original: L3+L4+L5)
+        const _filsTemp = [...new Set(Object.keys(_metasTemp).map(k=>k.split('|')[0]))];
+        const _anosTemp = [...new Set(Object.keys(_metasTemp).map(k=>k.split('|')[3]))];
+        _filsTemp.forEach(fil=>{
+          _anosTemp.forEach(ano=>{
+            for(let m=1;m<=12;m++){
+              const kTele = mkKey(fil,'FAT_TELE','Telepeças/Balcão',+ano,m);
+              const kOfic = mkKey(fil,'FAT_OFIC','Oficina/Funilaria',+ano,m);
+              const kLiq  = mkKey(fil,'FAT_LIQ','GERAL',+ano,m);
+              const vTele = _metasTemp[kTele]||0;
+              const vOfic = _metasTemp[kOfic]||0;
+              if(vTele||vOfic) _metasTemp[kLiq] = vTele + vOfic;
+            }
+          });
+        });
         Object.assign(METAS, _metasTemp);
         console.log(`✅ Metas ${env.toUpperCase()} carregadas do Sheets: ${metas.length} registros (${metasCount} entradas)`);
       }
