@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.2.0 -->
+<!-- De Nigris Cockpit v4 | Versao: V4.2.1 -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -5140,6 +5140,9 @@ function renderTblInd(env,rows){
    CANAIS
 ═══════════════════════════════════════════════ */
 function renderCanais(env,rows){
+  // Snapshot do estado de filial no início para evitar race condition
+  const _filSnap = new Set([...F[env].filial]);
+  const _filNormSnap = new Set([..._filSnap].map(_normFil));
   const cans=env==='mb'?['Telepeças/Balcão','Oficina/Funilaria']:['Atacado/Grandes Contas','Varejo/Balcão'];
   const ids=env==='mb'?[['tele','blu'],['ofic','ora']]:[['atac','mc'],['var','cya']];
   // Destruir gráfico anterior se DB vazio
@@ -5164,7 +5167,7 @@ function renderCanais(env,rows){
   const rowsFull=applyDREPriority(DB[env].filter(r=>{
     if(r._fonte==='os') return false;
     if(_afFull && _afFull.length && !_afFull.includes(r.Filial)) return false;
-    if(!F[env].filial.has('all') && !_filNormSet(env).has(_normFil(r.Filial)))return false;
+    if(!_filSnap.has('all') && !_filNormSnap.has(_normFil(r.Filial)))return false;
     if(!F[env].ano.has(String(r.Ano)))return false;
     if(!(F[env].mes.has('all')||F[env].mes.has(String(r.Mês_Num))))return false;
     return true;
