@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.1.9-debug -->
+<!-- De Nigris Cockpit v4 | Versao: V4.1.9-debug2 -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -3621,6 +3621,7 @@ function aggMeta(env,rows,ind,canal){
 function aggMetaMes(env,rows,ind,canal,m){
   const anosNoDado=[...new Set(rows.map(r=>String(r.Ano)))];
   const fils=F[env].filial.has('all')?[...new Set(rows.map(r=>r.Filial))]:[...F[env].filial];
+  if(ind==='FAT_LIQ'&&m===1) console.log('[FILSET] isAll='+F[env].filial.has('all')+' filial='+JSON.stringify([...F[env].filial])+' fils='+JSON.stringify(fils));
   let tot=0;
   const canalEfetivo = (canal==='GERAL' && (ind==='LB_R'||ind==='LB'||ind==='RD_R'||ind==='RD'))
     ? _detectCanalMeta(env,rows) : canal;
@@ -9865,7 +9866,6 @@ async function _sincronizarTudoDoSheets(){
               const kLiq  = mkKey(fil,'FAT_LIQ','GERAL',+ano,m);
               const vTele = _metasTemp[kTele]||0;
               const vOfic = _metasTemp[kOfic]||0;
-              if(m===1) console.log('[FAT_LIQ_CALC] fil='+fil+' ano='+ano+' vTele='+vTele+' vOfic='+vOfic+' total='+(vTele+vOfic));
               if(vTele||vOfic) _metasTemp[kLiq] = vTele + vOfic;
             }
           });
