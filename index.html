@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.1.9-debug2 -->
+<!-- De Nigris Cockpit v4 | Versao: V4.1.9 -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -3516,7 +3516,7 @@ function getMeta(fil,ind,canal,ano,mes){return+(METAS[mkKey(fil,ind,canal,ano,me
 function todosAnosTêmMeta(env, rows){
   const anos=[...new Set(rows.map(r=>r.Ano))];
   if(!anos.length) return false;
-  const fils=F[env].filial.has('all')?[...new Set(rows.map(r=>r.Filial))]:[...F[env].filial];
+  const fils=[...new Set(rows.map(r=>r.Filial))];
   const canalAtivo = activeDepto(env);
   return anos.some(ano=>{
     // Se canal ativo, verificar só o canal específico; senão verifica todos
@@ -3609,7 +3609,7 @@ function fmt(k,v){return k.fmt==='fR'?fR(v):fP(v);}
 // Agrega metas para filiais/anos/meses filtrados (só anos>=2026)
 // canalMeta: se 'auto', detecta pelo canal das rows filtradas (se único canal → usa esse, senão 'GERAL')
 function aggMeta(env,rows,ind,canal){
-  const fils=F[env].filial.has('all')?[...new Set(rows.map(r=>r.Filial))]:[...F[env].filial];
+  const fils=[...new Set(rows.map(r=>r.Filial))];
   const ms=months(rows); let tot=0;
   const anosNoDado=[...new Set(rows.map(r=>String(r.Ano)))];
   // Para LB_R/LB/RD_R/RD: se canal='GERAL' mas há filtro de canal ativo nas rows → usar canal específico
@@ -3620,8 +3620,7 @@ function aggMeta(env,rows,ind,canal){
 }
 function aggMetaMes(env,rows,ind,canal,m){
   const anosNoDado=[...new Set(rows.map(r=>String(r.Ano)))];
-  const fils=F[env].filial.has('all')?[...new Set(rows.map(r=>r.Filial))]:[...F[env].filial];
-  if(ind==='FAT_LIQ'&&m===1) console.log('[FILSET] isAll='+F[env].filial.has('all')+' filial='+JSON.stringify([...F[env].filial])+' fils='+JSON.stringify(fils));
+  const fils=[...new Set(rows.map(r=>r.Filial))];
   let tot=0;
   const canalEfetivo = (canal==='GERAL' && (ind==='LB_R'||ind==='LB'||ind==='RD_R'||ind==='RD'))
     ? _detectCanalMeta(env,rows) : canal;
