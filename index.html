@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.1.7-debug2 -->
+<!-- De Nigris Cockpit v4 | Versao: V4.1.7 -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -3621,7 +3621,6 @@ function aggMeta(env,rows,ind,canal){
 function aggMetaMes(env,rows,ind,canal,m){
   const anosNoDado=[...new Set(rows.map(r=>String(r.Ano)))];
   const fils=F[env].filial.has('all')?[...new Set(rows.map(r=>r.Filial))]:[...F[env].filial];
-  if(ind==='FAT_LIQ' && m===1) console.log('[AGG_LIQ] isAll='+F[env].filial.has('all')+' filialSet='+JSON.stringify([...F[env].filial])+' fils='+JSON.stringify(fils)+' rowsFiliais='+JSON.stringify([...new Set(rows.map(r=>r.Filial))]));
   let tot=0;
   const canalEfetivo = (canal==='GERAL' && (ind==='LB_R'||ind==='LB'||ind==='RD_R'||ind==='RD'))
     ? _detectCanalMeta(env,rows) : canal;
@@ -4123,11 +4122,12 @@ function fTogFilial(env,el,val){
   allChip.classList.remove('on-mb','on-mc');
   F[env].filial.delete('all');
 
-  const jaMarcada = el.classList.contains('on-'+env);
+  // Verificar pelo Set, não pelo visual do chip (mais confiável)
+  const jaMarcada = F[env].filial.has(val);
   const quantasMarcadas = F[env].filial.size;
 
   if(jaMarcada && quantasMarcadas > 1){
-    // ✅ Estava marcada com outras — selecionar SÓ ela, desmarcar as demais
+    // Estava marcada com outras — selecionar SÓ ela
     wrap.querySelectorAll('.chip').forEach(c => c.classList.remove('on-mb','on-mc'));
     el.classList.add('on-'+env);
     F[env].filial = new Set([val]);
