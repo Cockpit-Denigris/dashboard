@@ -1,4 +1,4 @@
-<!-- De Nigris Cockpit v4 | Versao: V4.2.9-debug2 -->
+<!-- De Nigris Cockpit v4 | Versao: V4.2.9 -->
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
@@ -9891,6 +9891,13 @@ async function _sincronizarTudoDoSheets(){
     } catch(e){ console.warn('⚠️ Erro ao restaurar cidades:', e); }
 
     setLoad(100, '✅ Carregamento concluído!');
+    // ── OS Tipos — carregar do Sheets ────────────────────────────
+    setLoad(92, '🔧 Buscando OS Tipos…');
+    try {
+      const osCount = await gsLoadOSTipos();
+      if(osCount > 0) console.log(`✅ OS Tipos carregados do Sheets: ${osCount} registros`);
+    } catch(eOS){ console.warn('⚠️ Erro ao carregar OS Tipos:', eOS); }
+
     console.log('✅ Sincronização concluída!');
     window._sincronizandoSheets = false;
     console.groupEnd();
@@ -12490,7 +12497,6 @@ async function gsLoadOSTipos(){
   const rows = gsParseCSV(csv);
   if(!rows.length) return 0;
   // OS rows têm _fonte==='os' — parsear usando a mesma lógica do upload
-  console.log('[OS_LOAD] CSV rows='+rows.length+(rows[0]?' keys='+Object.keys(rows[0]).join(','):''));
   const parsed = rows.map(r => Object.assign({}, r, {
     _fonte: 'os',
     Ano: parseInt(r.Ano || r.ano || 0),
@@ -12500,7 +12506,6 @@ async function gsLoadOSTipos(){
     LB_Real_Pct: parseFloat(String(r.LB_Real_Pct||0).replace(',','.'))||0,
     Qtd_OS: parseInt(r.Qtd_OS||0),
   }));
-  console.log('[OS_LOAD] parsed='+parsed.length);
   // Remover OS anteriores do GS e adicionar novos
   ['mb','mc'].forEach(env => {
     DB[env] = (DB[env]||[]).filter(r => r._fonte !== 'os' || r._gsImport !== true);
